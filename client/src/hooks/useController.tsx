@@ -1,27 +1,73 @@
-import { useContext } from 'react'
-import { XorO } from '../types'
-import { ControllerContext } from '../contexts/ControllerContext'
+import { useState } from "react";
+import { XorO } from "../types";
 
-export const useController = () => {
-  const ctx = useContext(ControllerContext)
-  if (!ctx) {
-    throw new Error('useController must be used within a ControllerProvider')
-  }
+const WIN_CONDITION = 3;
 
-  const { boardState: [board, setBoard], currentPlayerState: [currentPlayer, setCurrentPlayer] } = ctx;
-  
-  const onSelection = (i: number, j: number, xOrO: XorO) => {
-    const newBoard = board.map((row, iRow) => 
-      row.map((value, jColumn) => (iRow === i && j === jColumn) ? xOrO : value)
-    )
-    setBoard(newBoard)
-    setCurrentPlayer(currentPlayer === "X" ? "O" : "X")
-  }
+export type Move = [number, number];
 
+export const useController = (): {
+  currentPlayer: XorO;
+  moves: Move[];
+  winner: XorO | undefined;
+  onSelection: (coords: Move) => void;
+  reset: () => void;
+} => {
+  const [moves, setMoves] = useState<Move[]>([]);
+  const [winner, setWinner] = useState<XorO>();
+
+  // Derivative variables
+  const currentPlayer = moves.length % 2 === 0 ? "X" : "O";
+
+  // Game methods
+  const onSelection = (coords: Move) => {
+    if (winner) return;
+
+    const playerPastMoves = [...moves]
+      .reverse()
+      .filter((_, idx) => idx % 2 === 1);
+    if (checkWin(playerPastMoves, coords)) {
+      setWinner(currentPlayer);
+    }
+    setMoves((prev) => [...prev, coords]);
+  };
   const reset = () => {
-    setBoard(board.map((row) => 
-      row.map(() => undefined)
-    ))
+    setMoves([]);
+    setWinner(undefined);
+  };
+
+  return { currentPlayer, moves, winner, onSelection, reset };
+};
+
+// Helper methods
+function checkWin(pastMoves: Move[], [i, j]: Move) {
+  if (
+    checkDirection(pastMoves, (m) => [i, j + m]) || // Check horizontal -
+    checkDirection(pastMoves, (m) => [i + m, j + m]) || // Check diagonal \
+    checkDirection(pastMoves, (m) => [i + m, j]) || // Check vertical |
+    checkDirection(pastMoves, (m) => [i - m, j + m]) // Check diagonal /
+  )
+    return true;
+
+  return false;
+}
+
+function checkDirection(pastMoves: Move[], iterate: (m: number) => Move) {
+  let count = 1;
+  for (let n = 1; n < WIN_CONDITION; n++) {
+    if (!hasMove(pastMoves, iterate(n))) {
+      break;
+    }
+    count++;
   }
-  return { currentPlayer, board, onSelection, reset }
+  for (let n = 1; n < WIN_CONDITION; n++) {
+    if (!hasMove(pastMoves, iterate(-n))) {
+      break;
+    }
+    count++;
+  }
+  return count >= WIN_CONDITION;
+}
+
+function hasMove(moves: Move[], [i, j]: Move) {
+  return moves.some((move) => move[0] === i && move[1] === j);
 }
