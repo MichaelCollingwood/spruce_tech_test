@@ -8,12 +8,8 @@ type InfoBarProps = {
 
 export default function InfoBar({ winner, currentPlayer }: InfoBarProps) {
   return (
-    <div className="flex flex-col font-mono text-center rounded p-2">
-      <p>
-        {winner
-          ? winner + " won 🎉"
-          : currentPlayer + "'s go"}
-      </p>
+    <div className="max-w-96 flex flex-col font-mono text-center rounded p-2">
+      <p>{winner ? winner + " won 🎉" : currentPlayer + "'s go"}</p>
     </div>
   );
 }

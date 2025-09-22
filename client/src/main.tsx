@@ -10,7 +10,7 @@ export const Main = () => {
   const { currentPlayer, moves, winner, onSelection, reset } = useController();
 
   return (
-    <div className="flex flex-col p-6 gap-6 max-w-96 mx-auto">
+    <div className="flex flex-col items-center justify-center p-6 gap-6 mx-auto">
       <TitleBar reset={reset} />
       <Grid
         currentPlayer={currentPlayer}
