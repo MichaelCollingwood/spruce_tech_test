@@ -1,24 +1,15 @@
-import React from "react";
-import { GAME_SIZE } from "../main";
-import { XorO } from "../types";
-import { Move } from "../hooks/useController";
+import React, { useContext } from "react";
+import { GameConfigContext } from "../context/GameConfigContext";
+import { useController } from "../hooks/useController";
 
-type GridProps = {
-  currentPlayer: XorO;
-  moves: Move[];
-  winner: XorO | undefined;
-  onSelection: (coords: Move) => void;
-};
+export default function Grid() {
+  const { currentPlayer, moves, winner, onSelection } = useController();
+  const {
+    gameSizeState: [gameSize],
+  } = useContext(GameConfigContext)!;
 
-export default function Grid({
-  currentPlayer,
-  moves,
-  winner,
-  onSelection,
-}: GridProps) {
-  const board: (string | undefined)[][] = Array.from(
-    { length: GAME_SIZE },
-    () => Array.from({ length: GAME_SIZE }, () => undefined),
+  const board: (string | undefined)[][] = Array.from({ length: gameSize }, () =>
+    Array.from({ length: gameSize }, () => undefined),
   );
   moves.forEach(([i, j], index) => {
     board[i][j] = index % 2 === 0 ? "X" : "O";
@@ -29,8 +20,8 @@ export default function Grid({
       <div
         className="grid p-4 bg-slate-100 rounded"
         style={{
-          gridTemplateColumns: `repeat(${GAME_SIZE}, auto)`,
-          gridTemplateRows: `repeat(${GAME_SIZE}, minmax(0, 1fr))`,
+          gridTemplateColumns: `repeat(${gameSize}, auto)`,
+          gridTemplateRows: `repeat(${gameSize}, minmax(0, 1fr))`,
         }}
       >
         {board.map((row, i) =>
@@ -41,9 +32,9 @@ export default function Grid({
               onClick={() => onSelection([i, j])}
               style={{
                 ...(i === 0 ? { borderTop: 0 } : {}),
-                ...(i === GAME_SIZE - 1 ? { borderBottom: 0 } : {}),
+                ...(i === gameSize - 1 ? { borderBottom: 0 } : {}),
                 ...(j === 0 ? { borderLeft: 0 } : {}),
-                ...(j === GAME_SIZE - 1 ? { borderRight: 0 } : {}),
+                ...(j === gameSize - 1 ? { borderRight: 0 } : {}),
               }}
               disabled={!!cell}
             >

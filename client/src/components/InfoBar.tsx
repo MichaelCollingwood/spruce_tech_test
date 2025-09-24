@@ -1,15 +1,11 @@
 import React from "react";
-import { XorO } from "../types";
+import { useController } from "../hooks/useController";
 
-type InfoBarProps = {
-  winner: XorO | undefined;
-  currentPlayer: XorO;
-};
-
-export default function InfoBar({ winner, currentPlayer }: InfoBarProps) {
+export default function InfoBar() {
+  const { currentPlayer, winner } = useController();
   return (
     <div className="max-w-96 flex flex-col font-mono text-center rounded p-2">
-      <p>{winner ? winner + " won 🎉" : currentPlayer + "'s go"}</p>
+      <p>{winner ? winner + " won 🎉" : currentPlayer + "'s go!"}</p>
     </div>
   );
 }
