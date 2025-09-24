@@ -43,5 +43,3 @@ function getMessage(
       return "Draw 😐";
   }
 }
-
-

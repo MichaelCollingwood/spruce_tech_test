@@ -30,7 +30,7 @@ export const useController = (): {
     if (checkWin(playerPastMoves, coords, winCondition)) {
       setResult(currentPlayer === "X" ? "win" : "lose");
     } else {
-      setCurrentPlayer(player => player === "X" ? "O" : "X")
+      setCurrentPlayer((player) => (player === "X" ? "O" : "X"));
     }
     setMoves((prev) => [...(prev || []), coords]);
   };

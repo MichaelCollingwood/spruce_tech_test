@@ -26,19 +26,22 @@ export default function TitleBar() {
     <div className="w-full p-4 relative">
       <div className="grid grid-cols-3 text-2xl gap-2 text-center">
         <h1 className="col-start-2 text-green-800">Tic Tac Toe</h1>
-        <div className="inline-flex gap-2 justify-end relative flex-wrap" ref={popoverRef}>
-          <button
-          className="px-3 py-1 text-sm rounded-full border border-green-700 text-green-800 hover:bg-green-700 hover:text-white transition-colors"
-          onClick={() => setIsSettingsPopoverOpen((isOpen) => !isOpen)}
+        <div
+          className="inline-flex gap-2 justify-end relative flex-wrap"
+          ref={popoverRef}
         >
-          Settings
-        </button>
           <button
-          className="px-3 py-1 text-sm rounded-full border border-green-700 text-green-800 hover:bg-green-700 hover:text-white transition-colors"
-          onClick={reset}
-        >
-          Reset
-        </button>
+            className="px-3 py-1 text-sm rounded-full border border-green-700 text-green-800 hover:bg-green-700 hover:text-white transition-colors"
+            onClick={() => setIsSettingsPopoverOpen((isOpen) => !isOpen)}
+          >
+            Settings
+          </button>
+          <button
+            className="px-3 py-1 text-sm rounded-full border border-green-700 text-green-800 hover:bg-green-700 hover:text-white transition-colors"
+            onClick={reset}
+          >
+            Reset
+          </button>
           {isSettingsPopoverOpen && (
             <div className="absolute right-0 top-full mt-2 bg-white border rounded shadow-lg z-50">
               <Settings />

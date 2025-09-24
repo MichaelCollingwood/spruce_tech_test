@@ -5,7 +5,7 @@ import { useController } from "../hooks/useController";
 export default function Players() {
   const { currentPlayer } = useController();
   const {
-    playersState: [players, setPlayers]
+    playersState: [players, setPlayers],
   } = useContext(GameConfigContext)!;
 
   return (
