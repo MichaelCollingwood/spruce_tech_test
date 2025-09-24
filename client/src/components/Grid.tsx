@@ -1,9 +1,10 @@
 import React, { useContext } from "react";
 import { GameConfigContext } from "../context/GameConfigContext";
 import { useController } from "../hooks/useController";
+import Players from "./Players";
 
 export default function Grid() {
-  const { currentPlayer, moves, winner, onSelection } = useController();
+  const { currentPlayer, moves, result, onSelection } = useController();
   const {
     gameSizeState: [gameSize],
   } = useContext(GameConfigContext)!;
@@ -16,9 +17,11 @@ export default function Grid() {
   });
 
   return (
-    <div className="overflow-auto mx-auto">
+    <div className="w-full flex flex-col gap-4 justify-center text-center h-auto m-auto bg-green-50">
+      <Players />
+      <div className="overflow-auto m-auto">
       <div
-        className="grid p-4 bg-slate-100 rounded"
+        className="grid mb-12"
         style={{
           gridTemplateColumns: `repeat(${gameSize}, auto)`,
           gridTemplateRows: `repeat(${gameSize}, minmax(0, 1fr))`,
@@ -40,7 +43,7 @@ export default function Grid() {
             >
               {cell
                 ? cell
-                : !winner && (
+                : !result && (
                     <span className="flex items-center justify-center w-full h-full opacity-0 hover:opacity-50">
                       {currentPlayer}
                     </span>
@@ -49,6 +52,6 @@ export default function Grid() {
           )),
         )}
       </div>
-    </div>
+    </div></div>
   );
 }

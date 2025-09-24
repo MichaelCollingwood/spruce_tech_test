@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { XorO } from "../types";
-import { GameConfigContext } from "../context/GameConfigContext";
+import { GameConfigContext, Result } from "../context/GameConfigContext";
 import { useContext } from "react";
 
 export type Move = [number, number];
@@ -8,42 +8,43 @@ export type Move = [number, number];
 export const useController = (): {
   currentPlayer: XorO;
   moves: Move[];
-  winner: XorO | undefined;
+  result: Result | undefined;
   onSelection: (coords: Move) => void;
   reset: () => void;
 } => {
   const {
+    currentPlayerState: [currentPlayer, setCurrentPlayer],
     movesState: [moves, setMoves],
-    winnerState: [winner, setWinner],
+    resultState: [result, setResult],
     gameSizeState: [gameSize],
     winConditionState: [winCondition],
   } = useContext(GameConfigContext)!;
 
-  // Derivative variables
-  const currentPlayer = (moves || []).length % 2 === 0 ? "X" : "O";
-
   // Game methods
   const onSelection = (coords: Move) => {
-    if (winner) return;
+    if (result) return;
 
     const playerPastMoves = [...(moves || [])]
       .reverse()
       .filter((_, idx) => idx % 2 === 1);
     if (checkWin(playerPastMoves, coords, winCondition)) {
-      setWinner(currentPlayer);
+      setResult(currentPlayer === "X" ? "win" : "lose");
+    } else {
+      setCurrentPlayer(player => player === "X" ? "O" : "X")
     }
     setMoves((prev) => [...(prev || []), coords]);
   };
   const reset = () => {
+    setCurrentPlayer("X");
     setMoves([]);
-    setWinner(undefined);
+    setResult(undefined);
   };
 
   useEffect(() => {
     reset();
   }, [gameSize, winCondition]);
 
-  return { currentPlayer, moves, winner, onSelection, reset };
+  return { currentPlayer, moves, result, onSelection, reset };
 };
 
 // Helper methods

@@ -7,7 +7,7 @@ export default function Settings() {
     winConditionState: [winCondition, setWinCondition],
   } = useContext(GameConfigContext)!;
   return (
-    <div className="p-2 flex gap-4 items-end">
+    <div className="p-2 flex gap-4 items-end justify-center">
       <label className="flex flex-col gap-1 text-sm">
         <span>Board size</span>
         <input
