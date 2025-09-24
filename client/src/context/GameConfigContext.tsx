@@ -5,6 +5,10 @@ import { XorO } from "../types";
 export type Result = "win" | "lose" | "draw"; // For X
 
 export type GameConfig = {
+  currentPageState: [
+    "game" | "stats",
+    React.Dispatch<React.SetStateAction<"game" | "stats">>,
+  ];
   currentPlayerState: [XorO, React.Dispatch<React.SetStateAction<XorO>>];
   playersState: [
     [string | undefined, string | undefined],
@@ -33,6 +37,7 @@ export function GameConfigProvider({
   return (
     <GameConfigContext.Provider
       value={{
+        currentPageState: useState<"game" | "stats">("game"),
         currentPlayerState: useState("X"),
         playersState: useState([undefined, undefined]),
         movesState: useState([]),

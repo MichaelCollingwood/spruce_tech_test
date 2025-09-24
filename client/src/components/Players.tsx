@@ -3,7 +3,7 @@ import { GameConfigContext } from "../context/GameConfigContext";
 import { useController } from "../hooks/useController";
 
 export default function Players() {
-  const { currentPlayer } = useController();
+  const { currentPlayer, reset } = useController();
   const {
     playersState: [players, setPlayers],
   } = useContext(GameConfigContext)!;
@@ -23,7 +23,10 @@ export default function Players() {
       <button
         className="px-1 py-0.5 rounded-full"
         title="Swap players"
-        onClick={() => setPlayers([players[1], players[0]])}
+        onClick={() => {
+          setPlayers([players[1], players[0]]);
+          reset();
+        }}
       >
         ⇄
       </button>

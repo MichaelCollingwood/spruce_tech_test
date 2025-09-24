@@ -18,6 +18,7 @@ export const useController = (): {
     resultState: [result, setResult],
     gameSizeState: [gameSize],
     winConditionState: [winCondition],
+    playersState: [players],
   } = useContext(GameConfigContext)!;
 
   // Game methods
@@ -28,7 +29,34 @@ export const useController = (): {
       .reverse()
       .filter((_, idx) => idx % 2 === 1);
     if (checkWin(playerPastMoves, coords, winCondition)) {
-      setResult(currentPlayer === "X" ? "win" : "lose");
+      const final = currentPlayer === "X" ? "win" : "lose";
+      setResult(final);
+      // Fire and forget save
+      fetch("http://localhost:4000/api/results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerX: players?.[0] || "X",
+          playerO: players?.[1] || "O",
+          winner: final === "win" ? "X" : final === "lose" ? "O" : "draw",
+          boardSize: gameSize || 3,
+          winCondition: winCondition || 3,
+        }),
+      }).catch(() => {});
+    } else if (moves.length === gameSize ** 2 - 1) {
+      // Draw
+      setResult("draw");
+      fetch("http://localhost:4000/api/results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerX: players?.[0] || "X",
+          playerO: players?.[1] || "O",
+          winner: "draw",
+          boardSize: gameSize || 3,
+          winCondition: winCondition || 3,
+        }),
+      }).catch(() => {});
     } else {
       setCurrentPlayer((player) => (player === "X" ? "O" : "X"));
     }

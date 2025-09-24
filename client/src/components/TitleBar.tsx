@@ -1,9 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import Settings from "./Settings";
 import { useController } from "../hooks/useController";
+import { GameConfigContext } from "../context/GameConfigContext";
 
 export default function TitleBar() {
   const { reset } = useController();
+  const {
+    currentPageState: [currentPage, setCurrentPage],
+  } = useContext(GameConfigContext)!;
   const [isSettingsPopoverOpen, setIsSettingsPopoverOpen] =
     useState<boolean>(false);
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -27,21 +31,41 @@ export default function TitleBar() {
       <div className="grid grid-cols-3 text-2xl gap-2 text-center">
         <h1 className="col-start-2 text-green-800">Tic Tac Toe</h1>
         <div
-          className="inline-flex gap-2 justify-end relative flex-wrap"
+          className="inline-flex gap-2 justify-end relative flex-wrap items-center"
           ref={popoverRef}
         >
-          <button
-            className="px-3 py-1 text-sm rounded-full border border-green-700 text-green-800 hover:bg-green-700 hover:text-white transition-colors"
-            onClick={() => setIsSettingsPopoverOpen((isOpen) => !isOpen)}
-          >
-            Settings
-          </button>
-          <button
-            className="px-3 py-1 text-sm rounded-full border border-green-700 text-green-800 hover:bg-green-700 hover:text-white transition-colors"
-            onClick={reset}
-          >
-            Reset
-          </button>
+          {currentPage === "game" ? (
+            <>
+              <button
+                className="px-3 py-1 text-sm rounded-full border border-green-700 text-green-800 hover:bg-green-700 hover:text-white transition-colors"
+                onClick={() => {
+                  setCurrentPage("stats");
+                  setIsSettingsPopoverOpen(false);
+                }}
+              >
+                Stats
+              </button>
+              <button
+                className="px-3 py-1 text-sm rounded-full border border-green-700 text-green-800 hover:bg-green-700 hover:text-white transition-colors"
+                onClick={() => setIsSettingsPopoverOpen((isOpen) => !isOpen)}
+              >
+                Settings
+              </button>
+              <button
+                className="px-3 py-1 text-sm rounded-full border border-green-700 text-green-800 hover:bg-green-700 hover:text-white transition-colors"
+                onClick={reset}
+              >
+                Reset
+              </button>
+            </>
+          ) : (
+            <button
+              className="px-3 py-1 text-sm rounded-full border border-green-700 text-green-800 hover:bg-green-700 hover:text-white transition-colors"
+              onClick={() => setCurrentPage("game")}
+            >
+              Game
+            </button>
+          )}
           {isSettingsPopoverOpen && (
             <div className="absolute right-0 top-full mt-2 bg-white border rounded shadow-lg z-50">
               <Settings />

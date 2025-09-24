@@ -1,19 +1,37 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { GameConfigContext, Result } from "../context/GameConfigContext";
 import { useController } from "../hooks/useController";
 
 export default function WinnerBanner() {
   const {
-    resultState: [result],
+    resultState: [result, setResult],
     playersState: [players],
   } = useContext(GameConfigContext)!;
   const { reset } = useController();
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!result) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        bannerRef.current &&
+        !bannerRef.current.contains(event.target as Node)
+      ) {
+        setResult(undefined);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [result, setResult]);
 
   if (!result) return null;
 
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <div className="animate-bounce-slow bg-white/95 border-2 border-green-700 shadow-2xl rounded-full px-6 py-3 flex items-center gap-3 pointer-events-auto">
+      <div
+        ref={bannerRef}
+        className="animate-bounce-slow bg-white/95 border-2 border-green-700 shadow-2xl rounded-full px-6 py-3 flex items-center gap-3 pointer-events-auto"
+      >
         <span className="text-2xl">🎉</span>
         <p className="font-semibold text-green-900 text-lg">
           {getMessage(result, players)}
