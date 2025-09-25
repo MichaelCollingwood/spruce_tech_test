@@ -73,6 +73,7 @@ export default function TitleBar() {
           )}
         </div>
       </div>
+      {currentPage === "stats" && <Settings />}
     </div>
   );
 }

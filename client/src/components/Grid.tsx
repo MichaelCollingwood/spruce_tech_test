@@ -4,7 +4,7 @@ import { useController } from "../hooks/useController";
 import Players from "./Players";
 
 export default function Grid() {
-  const { currentPlayer, moves, result, onSelection } = useController();
+  const { currentPlayer, moves, winner, onSelection } = useController();
   const {
     gameSizeState: [gameSize],
   } = useContext(GameConfigContext)!;
@@ -43,7 +43,7 @@ export default function Grid() {
               >
                 {cell
                   ? cell
-                  : !result && (
+                  : !winner && (
                       <span className="flex items-center justify-center w-full h-full opacity-0 hover:opacity-50">
                         {currentPlayer}
                       </span>

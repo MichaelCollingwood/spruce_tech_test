@@ -2,7 +2,7 @@ import React, { createContext, useState } from "react";
 import { Move } from "../hooks/useController";
 import { XorO } from "../types";
 
-export type Result = "win" | "lose" | "draw"; // For X
+export type Winner = "X" | "O" | "draw";
 
 export type GameConfig = {
   currentPageState: [
@@ -17,9 +17,9 @@ export type GameConfig = {
     >,
   ];
   movesState: [Move[], React.Dispatch<React.SetStateAction<Move[]>>];
-  resultState: [
-    Result | undefined,
-    React.Dispatch<React.SetStateAction<Result | undefined>>,
+  winnerState: [
+    Winner | undefined,
+    React.Dispatch<React.SetStateAction<Winner | undefined>>,
   ];
   gameSizeState: [number, React.Dispatch<React.SetStateAction<number>>];
   winConditionState: [number, React.Dispatch<React.SetStateAction<number>>];
@@ -41,7 +41,7 @@ export function GameConfigProvider({
         currentPlayerState: useState("X"),
         playersState: useState([undefined, undefined]),
         movesState: useState([]),
-        resultState: useState<Result>(),
+        winnerState: useState<Winner>(),
         gameSizeState: useState<number>(3),
         winConditionState: useState<number>(3),
       }}

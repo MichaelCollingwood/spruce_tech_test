@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { XorO } from "../types";
-import { GameConfigContext, Result } from "../context/GameConfigContext";
+import { GameConfigContext, Winner } from "../context/GameConfigContext";
 import { useContext } from "react";
 
 export type Move = [number, number];
@@ -8,14 +8,14 @@ export type Move = [number, number];
 export const useController = (): {
   currentPlayer: XorO;
   moves: Move[];
-  result: Result | undefined;
+  winner: Winner | undefined;
   onSelection: (coords: Move) => void;
   reset: () => void;
 } => {
   const {
     currentPlayerState: [currentPlayer, setCurrentPlayer],
     movesState: [moves, setMoves],
-    resultState: [result, setResult],
+    winnerState: [winner, setWinner],
     gameSizeState: [gameSize],
     winConditionState: [winCondition],
     playersState: [players],
@@ -23,29 +23,28 @@ export const useController = (): {
 
   // Game methods
   const onSelection = (coords: Move) => {
-    if (result) return;
+    if (winner) return;
 
     const playerPastMoves = [...(moves || [])]
       .reverse()
       .filter((_, idx) => idx % 2 === 1);
     if (checkWin(playerPastMoves, coords, winCondition)) {
-      const final = currentPlayer === "X" ? "win" : "lose";
-      setResult(final);
-      // Fire and forget save
+      const final: Winner = currentPlayer === "X" ? "X" : "O";
+      setWinner(final);
       fetch("http://localhost:4000/api/results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           playerX: players?.[0] || "X",
           playerO: players?.[1] || "O",
-          winner: final === "win" ? "X" : final === "lose" ? "O" : "draw",
+          winner: final,
           boardSize: gameSize || 3,
           winCondition: winCondition || 3,
         }),
       }).catch(() => {});
     } else if (moves.length === gameSize ** 2 - 1) {
       // Draw
-      setResult("draw");
+      setWinner("draw");
       fetch("http://localhost:4000/api/results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -65,14 +64,14 @@ export const useController = (): {
   const reset = () => {
     setCurrentPlayer("X");
     setMoves([]);
-    setResult(undefined);
+    setWinner(undefined);
   };
 
   useEffect(() => {
     reset();
   }, [gameSize, winCondition]);
 
-  return { currentPlayer, moves, result, onSelection, reset };
+  return { currentPlayer, moves, winner, onSelection, reset };
 };
 
 // Helper methods

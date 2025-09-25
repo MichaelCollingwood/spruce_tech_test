@@ -59,19 +59,27 @@ app.post('/api/results', (req, res) => {
 
 // Get stats per player
 app.get('/api/stats', (req, res) => {
+  const size = Number(req.query.boardSize);
+  const win = Number(req.query.winCondition);
+  const hasFilters = !Number.isNaN(size) && !Number.isNaN(win);
+
   const rows = db.prepare(`
-    WITH totals AS (
+    WITH filtered AS (
+      SELECT * FROM matches
+      ${hasFilters ? 'WHERE board_size = ? AND win_condition = ?' : ''}
+    ),
+    totals AS (
       SELECT p.name as name,
-             SUM(CASE WHEN m.winner = 'X' AND m.player_x_id = p.id THEN 1 ELSE 0 END) as wins,
-             SUM(CASE WHEN m.winner = 'O' AND m.player_o_id = p.id THEN 1 ELSE 0 END) as wins_o,
-             SUM(CASE WHEN (m.winner = 'X' AND m.player_o_id = p.id) OR (m.winner = 'O' AND m.player_x_id = p.id) THEN 1 ELSE 0 END) as losses,
-             SUM(CASE WHEN m.winner = 'draw' AND (m.player_x_id = p.id OR m.player_o_id = p.id) THEN 1 ELSE 0 END) as draws
+        SUM(CASE WHEN m.winner = 'X' AND m.player_x_id = p.id THEN 1 ELSE 0 END) as wins_x,
+        SUM(CASE WHEN m.winner = 'O' AND m.player_o_id = p.id THEN 1 ELSE 0 END) as wins_o,
+        SUM(CASE WHEN (m.winner = 'X' AND m.player_o_id = p.id) OR (m.winner = 'O' AND m.player_x_id = p.id) THEN 1 ELSE 0 END) as losses,
+        SUM(CASE WHEN m.winner = 'draw' AND (m.player_x_id = p.id OR m.player_o_id = p.id) THEN 1 ELSE 0 END) as draws
       FROM players p
-      LEFT JOIN matches m ON m.player_x_id = p.id OR m.player_o_id = p.id
+      LEFT JOIN filtered m ON m.player_x_id = p.id OR m.player_o_id = p.id
       GROUP BY p.id
     )
-    SELECT name, (wins + wins_o) as wins, losses, draws FROM totals ORDER BY (wins + wins_o) DESC, name
-  `).all();
+    SELECT name, (wins_x + wins_o) as wins, losses, draws FROM totals ORDER BY (wins_x + wins_o) DESC, name
+  `).all(...(hasFilters ? [size, win] : []));
   res.json(rows);
 });
 
