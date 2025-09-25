@@ -20,7 +20,8 @@ export default function Stats() {
       .catch(() => setRows([]));
   }, [gameSize, winCondition]);
 
-  if (!rows.length) return null;
+  const visibleRows = rows.filter((r) => r.wins || r.losses || r.draws);
+  if (!visibleRows.length) return <p className="text-sm">No results</p>;
 
   return (
     <div className="grid grid-cols-5 gap-2 text-sm mx-auto">
@@ -29,21 +30,19 @@ export default function Stats() {
       <div className="font-medium">Losses</div>
       <div className="font-medium">Draws</div>
       <div className="font-medium">W/L %</div>
-      {rows
-        .filter((r) => r.wins || r.losses || r.draws)
-        .map((r) => (
-          <React.Fragment key={r.name}>
-            <div>{r.name}</div>
-            <div>{r.wins}</div>
-            <div>{r.losses}</div>
-            <div>{r.draws}</div>
-            <div>
-              {r.wins + r.losses > 0
-                ? Math.round((r.wins / (r.wins + r.losses)) * 100) + "%"
-                : "-"}
-            </div>
-          </React.Fragment>
-        ))}
+      {visibleRows.map((r) => (
+        <React.Fragment key={r.name}>
+          <div>{r.name}</div>
+          <div>{r.wins}</div>
+          <div>{r.losses}</div>
+          <div>{r.draws}</div>
+          <div>
+            {r.wins + r.losses > 0
+              ? Math.round((r.wins / (r.wins + r.losses)) * 100) + "%"
+              : "-"}
+          </div>
+        </React.Fragment>
+      ))}
     </div>
   );
 }
